@@ -30,6 +30,7 @@ This project uses a distributed microservices architecture where each agent runs
 - **Compliance Service (`compliance_agent`):** Acts as the final regulatory and policy gatekeeper, validating underwriting packages against statutory lending limits, checking AML/sanctions criteria, and generating immutable audit traces.
 - **Agent App (`app`)**: A web application that queries the dispatcher agent, displays progress, and renders performance waterfall analytics via Cloud Shell Web Preview.
 
+---
 ## Project Structure
 ```
 credisync-underwriting/
@@ -50,6 +51,7 @@ The `shared/` directory contains core modules shared across all agents and the w
 - `adk_app.py` – ADK API Service implementation with built-in A2A functionality and lifecycle hook management (`ToolContext`/ `CallbackContext`).
 - `authenticated_httpx.py` – [httpx](https://www.python-httpx.org/) client extension configured for secure [service-to-service requests](https://docs.cloud.google.com/run/docs/authenticating/service-to-service) with OIDC ID tokens.
 
+---
 ## Requirements
 
 *   **uv**: Python package manager (required for local development).
