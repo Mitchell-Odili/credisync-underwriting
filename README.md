@@ -40,13 +40,14 @@ credisync-underwriting/
 │   ├── valuation_agent/
 |   ├── compliance_agent/
 │   └── dispatcher_agent/
-├── shared/                  # Common schemas, Pydantic models, and A2A protocol helpers
+├── shared/                  # Common schemas, Pydantic models, configuration and A2A protocol helpers
 ├── config/                  # Cloud Run deployment configs & environment variables
 └── main.py                  # Orchestration entrypoint
 ```
 
 ### 🔗 Shared Files
 The `shared/` directory contains core modules shared across all agents and the web application. To eliminate code duplication, these files can be linked into respective subdirectories as [**symlinks**](https://en.wikipedia.org/wiki/Symbolic_link):
+- `config.py` – Centralized dictionary mapping microservices to specific Gemini model tiers (`gemini-3.5-flash-lite`).
 - `schemas.py` – Pydantic data models for loan applications, ingestion, valuation, underwriting, compliance, and final lending packages
 - `a2a_utils.py` – Contains code for rewriting agent URLs in A2A AgentCards when deployed in Google Cloud Run.
 - `adk_app.py` – ADK API Service implementation with built-in A2A functionality and lifecycle hook management (`ToolContext`/ `CallbackContext`).
