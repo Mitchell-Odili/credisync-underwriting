@@ -1,4 +1,4 @@
-# credisync-underwriting
+# credisync-underwriting & Risk platform
 
 An enterprise multi-agent credit scoring, financial valuation, and risk underwriting platform built with Google's Agent Development Kit (ADK) and Agent-to-Agent (A2A) protocol. It features a team of specialized microservice agents that ingest loan applications, evaluate borrower solvency, enforce compliance guardrails and score financial risks, orchestrated to deliver robust automated lending packages for financial service providers.
 
@@ -20,7 +20,7 @@ The high-level cloud deployment topology outlines the integration across Google 
 
 ---
 
-## Micro Services Architecture
+## 🏛️ Micro Services Architecture
 This project uses a distributed microservices architecture where each agent runs in its own container and communicates securely via the Agent-2-Agent (A2A) protocol over HTTP:
 
 - **Dispatcher Service (`dispatcher`)**: Summarizes the lending package, manages workflow coordination using `LoopAgent`, `SequentialAgent`, and `RemoteA2aAgent` and writes the final output to a shared cloud workspace.
@@ -31,7 +31,7 @@ This project uses a distributed microservices architecture where each agent runs
 - **Agent App (`app`)**: A web application that queries the dispatcher agent, displays progress, and renders performance waterfall analytics via Cloud Shell Web Preview.
 
 ---
-## Project Structure
+## 🗂️ Project Structure
 ```
 credisync-underwriting/
 ├── agents/                  # Contains individual agent directories and SKILL.md files
@@ -45,19 +45,19 @@ credisync-underwriting/
 └── main.py                  # Orchestration entrypoint
 ```
 
-### Shared Files
+### 🔗 Shared Files
 The `shared/` directory contains core modules shared across all agents and the web application. To eliminate code duplication, these files can be linked into respective subdirectories as [**symlinks**](https://en.wikipedia.org/wiki/Symbolic_link):
 - `a2a_utils.py` – Contains code for rewriting agent URLs in A2A AgentCards when deployed in Google Cloud Run.
 - `adk_app.py` – ADK API Service implementation with built-in A2A functionality and lifecycle hook management (`ToolContext`/ `CallbackContext`).
 - `authenticated_httpx.py` – [httpx](https://www.python-httpx.org/) client extension configured for secure [service-to-service requests](https://docs.cloud.google.com/run/docs/authenticating/service-to-service) with OIDC ID tokens.
 
 ---
-## Requirements
+## 📋 Requirements
 
 *   **uv**: Python package manager (required for local development).
 *   **Google Cloud SDK**: Required for GCP service authentication, secret management, and Cloud Run deployments
 
-## Quick Start
+## ⚡ Quick Start
 
 1.  **Install Dependencies:**
     ```bash
@@ -80,7 +80,7 @@ The `shared/` directory contains core modules shared across all agents and the w
 4.  **Access the App:**
     Open **http://localhost:8000** in your browser.
 
-## Deployment
+## 🚢 Deployment
 
 To deploy to Google Cloud Run, containerize and deploy each service individually, then configure the Dispatcher/Orchestrator service with the secure endpoint URLs of the downstream microservices.
 
