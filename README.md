@@ -2,7 +2,25 @@
 
 An enterprise multi-agent credit scoring, financial valuation, and risk underwriting platform built with Google's Agent Development Kit (ADK) and Agent-to-Agent (A2A) protocol. It features a team of specialized microservice agents that ingest loan applications, evaluate borrower solvency, enforce compliance guardrails and score financial risks, orchestrated to deliver robust automated lending packages for financial service providers.
 
-## Architecture
+---
+
+## 🏗️ Multi-Agent Workflow Architecture
+
+The orchestration logic is structured around sequential, parallel, and loop primitives using ADK. The **Dispatcher** coordinates document ingestion and valuation concurrently, followed by an iterative underwriting and compliance review loop:
+
+![CrediSync Multi-Agent Workflow](docs/assets/workflow-architecture.jpg)
+
+---
+
+## ☁️ Enterprise Cloud Infrastructure
+
+The high-level cloud deployment topology outlines the integration across Google Cloud Run, Cloud Functions, external APIs, and secure A2A communication channels:
+
+![Enterprise Multi-Agent Architecture](docs/assets/enterprise-architecture.jpg)
+
+---
+
+## Micro Services Architecture
 This project uses a distributed microservices architecture where each agent runs in its own container and communicates securely via the Agent-2-Agent (A2A) protocol over HTTP:
 
 - **Dispatcher Service (`dispatcher`)**: Summarizes the lending package, manages workflow coordination using `LoopAgent`, `SequentialAgent`, and `RemoteA2aAgent` and writes the final output to a shared cloud workspace.
