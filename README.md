@@ -1,6 +1,6 @@
 # credisync-underwriting
 
-An enterprise multi-agent credit scoring, financial valuation, and risk underwriting platform built with Google's Agent Development Kit (ADK) and Agent-to-Agent (A2A) protocol. It features a team of specialized microservice agents that ingest loan applications, evaluate borrower solvency, and score financial risks, orchestrated to deliver robust automated lending packages for financial service providers.
+An enterprise multi-agent credit scoring, financial valuation, and risk underwriting platform built with Google's Agent Development Kit (ADK) and Agent-to-Agent (A2A) protocol. It features a team of specialized microservice agents that ingest loan applications, evaluate borrower solvency, enforce compliance guardrails and score financial risks, orchestrated to deliver robust automated lending packages for financial service providers.
 
 ## Architecture
 This project uses a distributed microservices architecture where each agent runs in its own container and communicates securely via the Agent-2-Agent (A2A) protocol over HTTP:
