@@ -4,19 +4,19 @@ An enterprise multi-agent credit scoring, financial valuation, and risk underwri
 
 ---
 
-## 🏗️ Multi-Agent Workflow Architecture
-
-The orchestration logic is structured around sequential, parallel, and loop primitives using ADK. The **Dispatcher** coordinates document ingestion and valuation concurrently, followed by an iterative underwriting and compliance review loop:
-
-![CrediSync Multi-Agent Workflow](docs/assets/workflow-architecture.jpg)
-
----
-
 ## ☁️ Enterprise Cloud Infrastructure
 
 The high-level cloud deployment topology outlines the integration across Google Cloud Run, Cloud Functions, external APIs, and secure A2A communication channels:
 
 ![Enterprise Multi-Agent Architecture](docs/assets/enterprise-architecture.jpg)
+
+---
+
+## 🏗️ Multi-Agent Workflow Architecture
+
+The orchestration logic is structured around sequential, parallel, and loop primitives using ADK. The **Dispatcher** coordinates document ingestion and valuation concurrently, followed by an iterative underwriting and compliance review loop:
+
+![CrediSync Multi-Agent Workflow](docs/assets/workflow-architecture.jpg)
 
 ---
 
