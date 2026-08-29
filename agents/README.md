@@ -8,7 +8,7 @@ This directory houses the independent, serverless microservices that make up the
 
 The following diagram illustrates the orchestration logic. The **Dispatcher** uses a **ParallelAgent** to kick off document intake and valuation concurrently, followed by a **LoopAgent** to manage the iterative underwriting and compliance review process.
 
-![CrediSync Multi-Agent Workflow](..docs/assets/workflow-architecture.jpg)
+![CrediSync Multi-Agent Workflow](../docs/assets/workflow-architecture.jpg)
 
 ---
 
