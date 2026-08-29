@@ -41,13 +41,13 @@ Financial service providers often struggle with manual document processing, frag
                │       Model Armor         │
                └───────────────────────────┘
 
+```
 - **Dispatcher Service (`dispatcher_agent`)**: Manages asynchronous workflow orchestration using `LoopAgent`, `SequentialAgent`, and `RemoteA2aAgent` compiling final approval packages.
 - **Ingestion Service (`ingestion_agent`)**: Accepts and parses unstructured financial documents uploaded by loan applicants, such as tax returns and bank statements with Model Armor input sanitization.
 - **Valuation Service (`valuation_agent`)**: Reaches out to external APIs such as credit bureaus and property appraisers to evaluate borrower risk. 
 - **Underwriting Service (`underwriting_agent`)**: Accesses private database tables in BigQuery containing client transaction records to perform institutional risk scoring
 - **Compliance Service (`compliance_agent`)**: Acts as the final regulatory and policy gatekeeper, validating underwriting packages against statutory lending limits, checking AML/sanctions criteria, and generating immutable audit traces.
 - **Agent App (`app`)**: A web application that queries the dispatcher agent, displays progress, and renders performance waterfall analytics via Cloud Shell Web Preview.
-```
 
 ## 4. Key Features & Advanced Capabilities
 
