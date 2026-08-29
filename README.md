@@ -47,6 +47,7 @@ credisync-underwriting/
 
 ### 🔗 Shared Files
 The `shared/` directory contains core modules shared across all agents and the web application. To eliminate code duplication, these files can be linked into respective subdirectories as [**symlinks**](https://en.wikipedia.org/wiki/Symbolic_link):
+- `schemas.py` – Pydantic data models for loan applications, ingestion, valuation, underwriting, compliance, and final lending packages
 - `a2a_utils.py` – Contains code for rewriting agent URLs in A2A AgentCards when deployed in Google Cloud Run.
 - `adk_app.py` – ADK API Service implementation with built-in A2A functionality and lifecycle hook management (`ToolContext`/ `CallbackContext`).
 - `authenticated_httpx.py` – [httpx](https://www.python-httpx.org/) client extension configured for secure [service-to-service requests](https://docs.cloud.google.com/run/docs/authenticating/service-to-service) with OIDC ID tokens.
