@@ -12,14 +12,6 @@ The high-level cloud deployment topology outlines the integration across Google 
 
 ---
 
-## 🏗️ Multi-Agent Workflow Architecture
-
-The orchestration logic is structured around sequential, parallel, and loop primitives using ADK. The **Dispatcher** coordinates document ingestion and valuation concurrently, followed by an iterative underwriting and compliance review loop:
-
-![CrediSync Multi-Agent Workflow](docs/assets/workflow-architecture.jpg)
-
----
-
 ## 🏛️ Micro Services Architecture
 This project uses a distributed microservices architecture where each agent runs in its own container and communicates securely via the Agent-2-Agent (A2A) protocol over HTTP:
 
@@ -29,6 +21,14 @@ This project uses a distributed microservices architecture where each agent runs
 - **Underwriting Service (`underwriting`)**: Accesses private database tables in BigQuery containing client transaction records to perform institutional risk scoring.
 - **Compliance Service (`compliance_agent`):** Acts as the final regulatory and policy gatekeeper, validating underwriting packages against statutory lending limits, checking AML/sanctions criteria, and generating immutable audit traces.
 - **Agent App (`app`)**: A web application that queries the dispatcher agent, displays progress, and renders performance waterfall analytics via Cloud Shell Web Preview.
+
+---
+
+## 🏗️ Multi-Agent Workflow Architecture
+
+The orchestration logic is structured around sequential, parallel, and loop primitives using ADK. The **Dispatcher** coordinates document ingestion and valuation concurrently, followed by an iterative underwriting and compliance review loop:
+
+![CrediSync Multi-Agent Workflow](docs/assets/workflow-architecture.jpg)
 
 ---
 ## 🗂️ Project Structure
