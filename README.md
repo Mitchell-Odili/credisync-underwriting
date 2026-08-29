@@ -65,13 +65,14 @@ The `shared/` directory contains core modules shared across all agents and the w
 To deploy to Google Cloud Run, containerize and deploy each service individually, then configure the Dispatcher/Orchestrator service with the secure endpoint URLs of the downstream microservices.
 
 1.  **Deploy Microservices:**
-    Deploy the `ingestion/`, `valuation/`, `underwriting/`, and `dispatcher/` folders as separate Cloud Run services. Note down their assigned HTTPS service URLs (e.g., `[https://ingestion-xyz.a.run.app](https://ingestion-xyz.a.run.app)`)..
+    Deploy the `ingestion/`, `valuation/`, `underwriting/`,`compliance/` and `dispatcher/` folders as separate Cloud Run services. Note down their assigned HTTPS service URLs (e.g., `[https://ingestion-xyz.a.run.app](https://ingestion-xyz.a.run.app)`)..
 
 2.  **Deploy Agent App:**
     Deploy the `app/` folder to Cloud Run and configure the following environment variables to wire up the Agent-to-Agent network via AgentCards:
     *   `INGESTION_AGENT_CARD_URL`: `https://<ingestion-url>/a2a/agent/.well-known/agent.json`
     *   `VALUATION_AGENT_CARD_URL`: `https://<valuation-url>/a2a/agent/.well-known/agent.json`
     *   `UNDERWRITING_AGENT_CARD_URL`: `https://<underwriting-url>/a2a/agent/.well-known/agent.json`
+    *   `COMPLIANCE_AGENT_CARD_URL`: `https://<compliance-url>/a2a/agent/.well-known/agent.json`
     *   `AGENT_URL`: `https://<dispatcher-url>`
 
 3.  **Access:**
