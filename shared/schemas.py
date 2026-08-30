@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 from pydantic import BaseModel, Field
 
@@ -11,13 +11,30 @@ class LoanApplication(BaseModel):
     employment_status: str = Field(..., description="Employment type (e.g., Full-Time, Self-Employed)")
     documents: List[str] = Field(default_factory=list, description="List of uploaded document paths or identifiers")
 
+class FinancialDocumentExtraction(BaseModel):
+    """Extracted entities from unstructured financial documents like tax returns or bank statements."""
+    application_id: str = Field(..., description="Unique UUID linking this extraction to the loan application")
+    legal_entity_name: str = Field(..., description="The official registered business or individual name found in the doc.")
+    tax_id: str = Field(..., description="Tax identification number or EIN.")
+    stated_annual_revenue: float = Field(..., description="Total annual revenue stated in the documents.")
+    total_liabilities: float = Field(..., description="Total liabilities or debt obligations found.")
+    document_type: str = Field(..., description="Type of document ingested, e.g., 'tax_return' or 'bank_statement'.")
+    confidence_score: float = Field(..., description="Confidence score of the extracted data between 0.0 and 1.0.")
+    # timestamp: str = Field(
+    #     default_factory=lambda: datetime.now(timezone.utc).isoformat(),
+    #     description="Time when extraction occurred (ISO string)"
+    # )
+
 class IngestionResult(BaseModel):
     """Output from the Ingestion Agent after parsing and sanitizing inputs."""
     application_id: str
     status: str = Field("SUCCESS", description="Ingestion processing status")
     normalized_income: float = Field(..., description="Normalized income figure verified after parsing statements")
+    extracted_data: Optional[FinancialDocumentExtraction] = Field(None, description="Detailed document extraction breakdown")
     sanitized_payload_summary: str = Field(..., description="Model Armor verified summary of unstructured data")
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    # timestamp: str = Field(
+    #     default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    # )
 
 class ValuationResult(BaseModel):
     """Output from the Valuation Agent covering credit scores and asset pricing."""
@@ -50,4 +67,6 @@ class LendingPackage(BaseModel):
     valuation: ValuationResult
     underwriting: UnderwritingResult
     compliance: ComplianceResult
-    generated_at: datetime = Field(default_factory=datetime.utcnow)
+    # generated_at: str = Field(
+    #     default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    # )

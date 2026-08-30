@@ -9,3 +9,16 @@ __pycache__/
 .vscode/
 .idea/
 .DS_Store
+
+# Secrets
+.env
+
+# Python Packaging & Build Artifacts
+*.egg-info/
+build/
+dist/
+*.egg
+
+# ADK Local Runtime State
+.adk/
+**/ .adk/
