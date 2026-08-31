@@ -16,7 +16,7 @@ The high-level cloud deployment topology outlines the integration across Google 
 Following strict enterprise cloud security guidelines, **agent memory** is never kept solely in local container RAM to prevent broken multi-turn conversations during scaling events or container recycling. Instead, the application employs a two-tier model:
 
 1. **Ephemeral Runtime State (`tool_context.state`)**: Provides low-latency shorthand context for active agent execution loops.
-2. **Durable Enterprise Persistence (Google Cloud Spanner)**: Instantly externalizes transaction records (such as `LoanApplicationRecords`) to a managed, ACID-compliant, encrypted operational store (`OLTP`), ensuring complete fault tolerance, compliance audit readiness, and leak prevention.
+2. **Durable Enterprise Persistence (Google Cloud Spanner)**: Instantly externalizes transaction records (such as `LoanApplicationRecords` and `IngestionExtractionRecords`) to a managed, ACID-compliant, encrypted operational store (`OLTP`), ensuring complete fault tolerance, compliance audit readiness, and leak prevention.
 
 ---
 
