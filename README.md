@@ -12,6 +12,15 @@ The high-level cloud deployment topology outlines the integration across Google 
 
 ---
 
+## 🔐 Enterprise Memory & State Management
+Following strict enterprise cloud security guidelines, **agent memory** is never kept solely in local container RAM to prevent broken multi-turn conversations during scaling events or container recycling. Instead, the application employs a two-tier model:
+
+1. **Ephemeral Runtime State (`tool_context.state`)**: Provides low-latency shorthand context for active agent execution loops.
+2. **Durable Enterprise Persistence (Google Cloud Spanner)**: Instantly externalizes transaction records (such as `LoanApplicationRecords`) to a managed, ACID-compliant, encrypted operational store (`OLTP`), ensuring complete fault tolerance, compliance audit readiness, and leak prevention.
+
+---
+
+
 ## 🏛️ Micro Services Architecture
 This project uses a distributed microservices architecture where each agent runs in its own container and communicates securely via the Agent-2-Agent (A2A) protocol over HTTP:
 
@@ -34,13 +43,15 @@ The orchestration logic is structured around sequential, parallel, and loop prim
 ## 🗂️ Project Structure
 ```
 credisync-underwriting/
+├── database/                # Spanner DDL schema definitions and database guides
+│   └── schema.sql
 ├── agents/                  # Contains individual agent directories and SKILL.md files
 │   ├── ingestion_agent/
 │   ├── underwriting_agent/
 │   ├── valuation_agent/
 |   ├── compliance_agent/
 │   └── dispatcher_agent/
-├── shared/                  # Common schemas, Pydantic models, configuration and A2A protocol helpers
+├── shared/                  # Common schemas, Pydantic models, configuration, database client and A2A protocol helpers
 ├── config/                  # Cloud Run deployment configs & environment variables
 └── main.py                  # Orchestration entrypoint
 ```
@@ -49,6 +60,7 @@ credisync-underwriting/
 The `shared/` directory contains core modules shared across all agents and the web application. To eliminate code duplication, these files can be linked into respective subdirectories as [**symlinks**](https://en.wikipedia.org/wiki/Symbolic_link):
 - `config.py` – Centralized dictionary mapping microservices to specific Gemini model tiers (`gemini-3.5-flash-lite`).
 - `schemas.py` – Pydantic data models for loan applications, ingestion, valuation, underwriting, compliance, and final lending packages
+- `db.py` – Google Cloud Spanner transactional mutation wrapper (`SpannerClientWrapper`) for secure operational state persistence.
 - `a2a_utils.py` – Contains code for rewriting agent URLs in A2A AgentCards when deployed in Google Cloud Run.
 - `adk_app.py` – ADK API Service implementation with built-in A2A functionality and lifecycle hook management (`ToolContext`/ `CallbackContext`).
 - `authenticated_httpx.py` – [httpx](https://www.python-httpx.org/) client extension configured for secure [service-to-service requests](https://docs.cloud.google.com/run/docs/authenticating/service-to-service) with OIDC ID tokens.
@@ -71,15 +83,21 @@ The `shared/` directory contains core modules shared across all agents and the w
     ```bash
     gcloud auth application-default login
     ```
-    And ensure your `GOOGLE_CLOUD_PROJECT` environment variable is set.
+    ```bash
+    export GOOGLE_CLOUD_PROJECT="your-gcp-project-id"
+    export SPANNER_INSTANCE_ID="your-spanner-instance-id"
+    export SPANNER_DATABASE_ID="your-database-id"
+    ```
+3. **Initialize Database**:
+    Create your Spanner instance/database using Google Standard SQL and apply the DDL script in [database/schema.sql](database/schema.sql).
 
-3.  **Run Locally:**
+4.  **Run Locally:**
     ```bash
     ./run_local.sh
     ```
     This will start the individual microservices and the web app processes concurrently.
 
-4.  **Access the App:**
+5.  **Access the App:**
     Open **http://localhost:8000** in your browser.
 
 ## 🚢 Deployment

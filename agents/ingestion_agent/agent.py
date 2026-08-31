@@ -11,6 +11,7 @@ from google.adk.tools import ToolContext
 from google.adk.tools.skill_toolset import SkillToolset
 from shared.config import MODELS
 from shared.schemas import IngestionResult
+from agents.ingestion_agent.tools.persistence import save_client_details_to_state
 
 # Load the structured skill directory
 skill_dir = pathlib.Path(__file__).parent / "skills" / "financial-document-extraction-parser"
@@ -18,47 +19,6 @@ document_parser_skill = load_skill_from_dir(skill_dir)
 
 # Wrap the local skill in a SkillToolset
 financial_parser_toolset = SkillToolset(skills=[document_parser_skill])
-
-# Tools
-def save_client_details_to_state(
-    tool_context: ToolContext,
-    ingestion_result: IngestionResult
-) -> dict[str, str]:
-    """Persists records to the database and updates ADK session state for multi-turn workflows."""
-    
-    app_id = ingestion_result.application_id
-    current_data = ingestion_result.model_dump()
-    
-    # 1. Permanent Database Persistence (e.g., Cloud Spanner)
-    # db.save_application_record(ingestion_result)
-    
-    # 2. Pull existing records from ADK session state for multi-turn merging
-    existing_records = tool_context.state.get("all_ingestion_records", {})
-    
-    if app_id in existing_records:
-        old_record = existing_records[app_id]
-        
-        # Merge top-level fields if needed
-        if not current_data.get("normalized_income") and old_record.get("normalized_income"):
-            current_data["normalized_income"] = old_record["normalized_income"]
-            
-        # Merge nested extracted data dictionaries field-by-field across batches
-        old_extracted = old_record.get("extracted_data", {})
-        new_extracted = current_data.get("extracted_data", {})
-        
-        for key, value in old_extracted.items():
-            if not new_extracted.get(key) and value:
-                new_extracted[key] = value
-                
-        current_data["extracted_data"] = new_extracted
-
-    # 3. Update session state keys for instant shorthand templating in downstream agents
-    existing_records[app_id] = current_data
-    tool_context.state["application_id"] = app_id
-    tool_context.state["ingestion_result"] = current_data
-    tool_context.state["all_ingestion_records"] = existing_records
-
-    return {"status": "success", "message": f"Successfully persisted and updated batch for {app_id}"}
 
 # Agent
 ingestion_agent = Agent(
