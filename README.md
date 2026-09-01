@@ -35,7 +35,7 @@ This project uses a distributed microservices architecture where each agent runs
 
 ## 🏗️ Multi-Agent Workflow Architecture
 
-The orchestration logic is structured around sequential, parallel, and loop primitives using ADK. The **Dispatcher** coordinates document ingestion and valuation concurrently, followed by an iterative underwriting and compliance review loop:
+The orchestration logic is structured around sequential and loop primitives using ADK. The **Dispatcher** coordinates document ingestion and valuation concurrently, followed by an iterative underwriting and compliance review loop:
 
 ![CrediSync Multi-Agent Workflow](docs/assets/workflow-architecture.jpg)
 

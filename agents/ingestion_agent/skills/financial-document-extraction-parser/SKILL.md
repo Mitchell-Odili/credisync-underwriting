@@ -1,6 +1,6 @@
 ---
 name: financial-document-extraction-parser
-description: Extracts, normalizes, and audits unstructured financial documents such as tax returns, P&L statements, and bank statements. Use when you need to parse accounting line items, normalize currencies, or audit financial records for a loan application.
+description: Extracts, normalizes, and audits unstructured financial documents such as tax returns, P&L statements, and bank statements. Use when you need to parse accounting line items, normalize currencies, or audit financial records for a loan application. 
 ---
 
 ## Core Objectives

@@ -22,9 +22,20 @@ valuation_extractor_toolset = SkillToolset(skills=[valuation_extractor_skill])
 valuation_agent = Agent(
     model=MODELS.get("valuation", "gemini-2.5-flash"),
     name="ValuationAgent",
-    instruction=(
-        "You are the Valuation Agent for CrediSync. Your role is to assess borrower solvency, "
-        "query credit risk profiles, and evaluate collateral-to-loan ratios using your unified valuation tool."
+    instruction=("""
+    You are the Valuation Agent for CrediSync. Your responsibility is to assess borrower solvency,
+        calculate debt-service coverage ratios (DSCR), loan-to-value (LTV) ratios, and run risk scores.
+        
+    Here is the ingested financial data from the previous step: {ingestion_result?}
+
+    EXECUTION RULES:
+    1. **EXECUTE VALUATION:** Immediately use your `assess_and_save_borrower_valuation` tool using the 
+    extracted income, requested amount, and borrower profile provided above.
+    2. **HANDLE INPUT TYPES:** Ensure all financial parameters are defensively cleaned (handling strings or floats) 
+    before calculation.
+    3. **PERSIST & OUTPUT:** Save the valuation results using your configured `output_key` and output a clean 
+    summary of the financial risk assessment.
+    """
     ),
     tools=[
         assess_and_save_borrower_valuation, 

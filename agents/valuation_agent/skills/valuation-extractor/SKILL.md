@@ -10,7 +10,7 @@ Establish the external financial baseline and collateral worth of an applicant b
 
 ## Workflow
 
-1. **Read References:** You MUST read [Valuation Rules](valuation-rules.md) and review the `ValuationResult` model in `shared/schemas.py` before processing.
+1. **Read References:** You MUST read [Valuation Rules](./valuation-rules.md) and review the `ValuationResult` model in `shared/schemas.py` before processing.
 2. **Credit Risk Scoring:** Interact with bureau verification tools to retrieve credit histories, past default indicators, and composite risk tiers.
 3. **Solvency & Cash-Flow Analysis:** Compute Debt-Service Coverage Ratios (DSCR) using verified income metrics and estimated debt obligations.
 4. **Collateral & LTV Appraisal:** Assess asset market values and calculate Loan-to-Value (LTV) ratios for secured commercial or retail credit applications.
