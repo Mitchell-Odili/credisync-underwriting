@@ -23,7 +23,7 @@ financial_parser_toolset = SkillToolset(skills=[document_parser_skill])
 # Agent
 ingestion_agent = Agent(
     name="ingestion_agent",
-    model=MODELS["ingestion"],
+    model=MODELS.get("ingestion", "gemini-2.5-flash"),
     description="Accepts, parses, and normalizes unstructured financial documents into verified schemas.",
     instruction="""
     You are the Ingestion Service agent for CrediSync Underwriting.

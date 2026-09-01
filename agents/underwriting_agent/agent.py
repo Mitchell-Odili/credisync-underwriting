@@ -18,10 +18,10 @@ skill_dir = pathlib.Path(__file__).parent / "skills" / "credit-policy"
 credit_policy_skill = load_skill_from_dir(skill_dir)
 credit_policy_toolset = SkillToolset(skills=[credit_policy_skill])
 
-# 3. Underwriter Agent Definition
-underwriter_agent = Agent(
-    name="UnderwriterAgent",
-    model=MODELS["underwriting"],
+# 3. Underwriting Agent Definition
+underwriting_agent = Agent(
+    name="UnderwritingAgent",
+    model=MODELS.get("underwriting", "gemini-2.5-flash"),
     description="Evaluates valuation telemetry against institutional credit policies and persists decisions.",
     instruction="""
     You are the Senior Credit Underwriter Agent for CrediSync.
@@ -40,4 +40,4 @@ underwriter_agent = Agent(
     output_key="underwriting_result"
 )
 
-root_agent = underwriter_agent
+root_agent = underwriting_agent

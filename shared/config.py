@@ -9,5 +9,6 @@ MODELS = {
     "ingestion": "gemini-3.5-flash-lite",
     "valuation": "gemini-3.5-flash-lite",
     "underwriting": "gemini-3.5-flash-lite",
-    "compliance": "gemini-3.5-flash-lite"
+    "compliance": "gemini-3.5-flash-lite",
+    "critic": "gemini-3.5-flash-lite",
 }

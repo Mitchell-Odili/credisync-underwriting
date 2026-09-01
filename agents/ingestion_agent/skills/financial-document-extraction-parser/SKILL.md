@@ -11,5 +11,8 @@ Extract standard accounting line items from unstructured text or OCR output, nor
 2. **Entity Recognition:** Locate the legal business name, Tax ID / PIN, and reporting period.
 3. **Financial Normalization:** 
    - Parse revenue and liability figures using `parser_utils.clean_currency()`.
+   ```bash 
+   python3 scripts/parser_utils.py
+   ```
    - Flag discrepancies where stated income diverges significantly from transaction flows.
 4. **Confidence Scoring:** Assign a confidence score (0.0 to 1.0) based on document legibility and completeness.

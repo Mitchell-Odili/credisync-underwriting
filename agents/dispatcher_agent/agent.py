@@ -20,7 +20,7 @@ cred_sync_pipeline = SequentialAgent(
 # 2. Define your Dispatcher Agent (The Intelligent Gatekeeper)
 cred_sync_dispatcher = Agent(
     name="CrediSyncDispatcher",
-    model=MODELS["dispatch"],
+    model=MODELS.get("dispatch", "gemini-2.5-flash"),
     instruction="""
     You are the CrediSync Underwriting Dispatcher. 
     1. **GREETING:** Welcome the user professionally to CrediSync Underwriting.
