@@ -34,3 +34,12 @@ CREATE TABLE ValuationRecords (
     loan_to_value_ratio FLOAT64,
     valuation_notes ARRAY<STRING(MAX)>,
 ) PRIMARY KEY (application_id);
+
+CREATE TABLE UnderwritingResults (
+    application_id STRING(MAX) NOT NULL,
+    probability_of_default FLOAT64 NOT NULL,
+    recommended_limit FLOAT64 NOT NULL,
+    policy_rules_passed BOOL NOT NULL,
+    notes STRING(MAX),
+    last_updated TIMESTAMP OPTIONS (allow_commit_timestamp = true)
+) PRIMARY KEY (application_id);

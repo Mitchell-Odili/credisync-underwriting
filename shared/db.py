@@ -1,6 +1,6 @@
 import os
 from google.cloud import spanner
-from shared.schemas import LoanApplication, IngestionResult, ValuationResult
+from shared.schemas import LoanApplication, IngestionResult, ValuationResult, UnderwritingResult
 
 class SpannerClientWrapper:
     def __init__(self):
@@ -10,6 +10,10 @@ class SpannerClientWrapper:
         
         self.instance = self.client.instance(self.instance_id)
         self.database = self.instance.database(self.database_id)
+
+    # def get_database_client(self):
+    #     """Returns the active Spanner database client reference."""
+    #     return self.database
 
     def save_loan_application(self, loan_app: LoanApplication) -> None:
         """Upserts a LoanApplication payload into Cloud Spanner using native arrays."""
@@ -79,6 +83,27 @@ class SpannerClientWrapper:
             
             transaction.insert_or_update(
                 table="ValuationRecords",
+                columns=list(row_data.keys()),
+                values=[list(row_data.values())]
+            )
+
+        self.database.run_in_transaction(insert_or_update_transaction)
+
+    def save_underwriting_result(self, result: UnderwritingResult) -> None:
+        """Upserts an UnderwritingResult payload into the UnderwritingResults table."""
+        
+        def insert_or_update_transaction(transaction):
+            row_data = {
+                "application_id": result.application_id,
+                "probability_of_default": result.probability_of_default,
+                "recommended_limit": result.recommended_limit,
+                "policy_rules_passed": result.policy_rules_passed,
+                "notes": result.notes,
+                "last_updated": spanner.COMMIT_TIMESTAMP,
+            }
+            
+            transaction.insert_or_update(
+                table="UnderwritingResults",
                 columns=list(row_data.keys()),
                 values=[list(row_data.values())]
             )
