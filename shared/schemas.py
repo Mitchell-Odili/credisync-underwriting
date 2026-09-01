@@ -37,11 +37,13 @@ class IngestionResult(BaseModel):
     # )
 
 class ValuationResult(BaseModel):
-    """Output from the Valuation Agent covering credit scores and asset pricing."""
-    application_id: str
-    credit_bureau_score: int = Field(..., description="Credit score retrieved from external bureaus")
-    collateral_value: float = Field(..., description="Appraised asset or collateral valuation")
+    application_id: str = Field(..., description="Unique loan application identifier")
+    credit_score: int = Field(..., description="Retrieved bureau credit score")
     risk_tier: str = Field(..., description="Assigned risk tier (e.g., Low, Medium, High)")
+    debt_service_coverage_ratio: float = Field(..., description="DSCR calculated from income and liabilities")
+    collateral_market_value: Optional[float] = Field(None, description="Appraised market value of pledged assets")
+    loan_to_value_ratio: Optional[float] = Field(None, description="LTV ratio if collateral is present")
+    valuation_notes: List[str] = Field(default_factory=list, description="External verification notes or flags")
 
 class UnderwritingResult(BaseModel):
     """Output from the Underwriting Agent detailing risk computation and credit rules."""

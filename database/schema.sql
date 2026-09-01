@@ -23,3 +23,14 @@ CREATE TABLE IngestionExtractionRecords (
     document_type STRING(MAX),
     confidence_score FLOAT64,
 ) PRIMARY KEY (application_id);
+
+CREATE TABLE ValuationRecords (
+    application_id STRING(MAX) NOT NULL,
+    valuation_timestamp TIMESTAMP OPTIONS (allow_commit_timestamp = true),
+    credit_score INT64,
+    risk_tier STRING(MAX),
+    debt_service_coverage_ratio FLOAT64,
+    collateral_market_value FLOAT64,
+    loan_to_value_ratio FLOAT64,
+    valuation_notes ARRAY<STRING(MAX)>,
+) PRIMARY KEY (application_id);

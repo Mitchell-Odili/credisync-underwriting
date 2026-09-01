@@ -1,6 +1,6 @@
 import os
 from google.cloud import spanner
-from shared.schemas import LoanApplication, IngestionResult
+from shared.schemas import LoanApplication, IngestionResult, ValuationResult
 
 class SpannerClientWrapper:
     def __init__(self):
@@ -56,6 +56,29 @@ class SpannerClientWrapper:
             
             transaction.insert_or_update(
                 table="IngestionExtractionRecords",
+                columns=list(row_data.keys()),
+                values=[list(row_data.values())]
+            )
+
+        self.database.run_in_transaction(insert_or_update_transaction)
+    
+    def save_valuation_result(self, val_result: ValuationResult) -> None:
+        """Upserts a ValuationResult payload into the ValuationRecords table."""
+        
+        def insert_or_update_transaction(transaction):
+            row_data = {
+                "application_id": val_result.application_id,
+                "valuation_timestamp": spanner.COMMIT_TIMESTAMP,
+                "credit_score": val_result.credit_score,
+                "risk_tier": val_result.risk_tier,
+                "debt_service_coverage_ratio": val_result.debt_service_coverage_ratio,
+                "collateral_market_value": val_result.collateral_market_value,
+                "loan_to_value_ratio": val_result.loan_to_value_ratio,
+                "valuation_notes": val_result.valuation_notes,
+            }
+            
+            transaction.insert_or_update(
+                table="ValuationRecords",
                 columns=list(row_data.keys()),
                 values=[list(row_data.values())]
             )
