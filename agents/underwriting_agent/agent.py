@@ -24,16 +24,15 @@ underwriting_agent = Agent(
     model=MODELS.get("underwriting", "gemini-2.5-flash"),
     description="Evaluates valuation telemetry against institutional credit policies and persists decisions.",
     instruction="""
-    You are the Senior Credit Underwriter Agent for CrediSync.
+    You are the Senior Underwriter for CrediSync.
     
-    UPSTREAM TELEMETRY:
-    - Valuation Metrics: {val_result?}
+    Review the current loan valuation telemetry:
+    - VALUATION DATA: {val_result?}
     
-    WORKFLOW:
-    1. Read the upstream valuation telemetry above.
-    2. Use your `assess_credit` skill function to run policy compliance checks and compute risk/limits.
-    3. Call `persist_underwriting_record` to commit the results to Google Cloud Spanner and update session state.
-    4. Output your final underwriting memo summary.
+    If prior risk feedback exists from the review loop, incorporate it:
+    - PRIOR RISK FEEDBACK: {risk_feedback?}
+    
+   Generate or refine the underwriting structure, pricing terms, and risk score.
     """,
     # Both tools are passed together in the toolset array
     tools=[credit_policy_toolset, persist_underwriting_record],

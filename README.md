@@ -65,6 +65,7 @@ The `shared/` directory contains core modules shared across all agents and the w
 - `config.py` – Centralized dictionary mapping microservices to specific Gemini model tiers (`gemini-3.5-flash-lite`).
 - `schemas.py` – Pydantic data models for loan applications, ingestion, valuation, underwriting, compliance, and final lending packages
 - `db.py` – Google Cloud Spanner transactional mutation wrapper (`SpannerClientWrapper`) for secure operational state persistence.
+- `rate_limiter.py` – Robust retry decorator handling `429 ResourceExhausted` errors and automatically managing Gemini API free-tier 15 RPM rate limits.
 - `a2a_utils.py` – Contains code for rewriting agent URLs in A2A AgentCards when deployed in Google Cloud Run.
 - `adk_app.py` – ADK API Service implementation with built-in A2A functionality and lifecycle hook management (`ToolContext`/ `CallbackContext`).
 - `authenticated_httpx.py` – [httpx](https://www.python-httpx.org/) client extension configured for secure [service-to-service requests](https://docs.cloud.google.com/run/docs/authenticating/service-to-service) with OIDC ID tokens.

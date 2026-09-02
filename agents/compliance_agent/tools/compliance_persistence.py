@@ -1,7 +1,9 @@
 from google.adk.tools import ToolContext
 from shared.schemas import ComplianceResult
 from shared.db import db_client
+from shared.rate_limiter import handle_rate_limit
 
+@handle_rate_limit
 def persist_compliance_record(
     tool_context: ToolContext,
     application_id: str,

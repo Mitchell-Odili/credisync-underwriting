@@ -34,12 +34,8 @@ The following diagram illustrates the orchestration logic. The **Dispatcher** us
 * **Role:** Acts as the chief risk governance gatekeeper using deterministic Python script evaluations.
 * **Key Features:** Enforces institutional risk appetite limits (e.g., probability of default vs. exposure caps) and triggers critique loops for high-value loans.
 
-### 6. Credit Review Pipeline (`agents/credreview_pipeline/`)
-* **Role:** Multi-agent orchestrator managing the iterative critique-refine loop.
-* **Key Features:** Utilizes ADK `LoopAgent` primitives to sequence the underwriting, compliance, and risk evaluation steps with a bounded maximum iteration constraint.
-
-### 7. Dispatcher Agent (`agents/dispatcher_agent/`)
-* **Role:** The core orchestrator managing state transitions, task distribution, and final report aggregation.
+### 6. Dispatcher Agent (`agents/dispatcher_agent/`)
+* **Role:** The core orchestrator managing state transitions, task distribution, document ingestion gating and final report aggregation.
 * **Key Features:** Leverages ADK primitives (`LoopAgent`, `SequentialAgent`) to coordinate downstream microservices seamlessly via A2A protocol endpoints.
 
 ---

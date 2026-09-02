@@ -5,16 +5,31 @@ root_dir = pathlib.Path(__file__).parents[2]
 if str(root_dir) not in sys.path:
     sys.path.insert(0, str(root_dir))
 
-from google.adk.agents import Agent, SequentialAgent
+from google.adk.agents import Agent, SequentialAgent, LoopAgent
 from agents.ingestion_agent.agent import ingestion_agent
 from agents.valuation_agent.agent import valuation_agent
+from agents.underwriting_agent.agent import underwriting_agent
+from agents.compliance_agent.agent import compliance_agent
+from agents.risk_critic_agent.agent import risk_critic_agent
 from shared.config import MODELS
 
-# 1. Define the deterministic pipeline of workers
+# 1. Define the iterative review loop directly
+credit_review_pipeline = LoopAgent(
+    name="CreditReviewPipeline",
+    description="Iteratively evaluates, critiques, and refines loan underwriting, compliance checks, and risk thresholds.",
+    sub_agents=[
+        underwriting_agent,
+        compliance_agent,
+        risk_critic_agent
+    ],
+    max_iterations=3
+)
+
+# 2. Wrap everything into the master sequential orchestration pipeline
 cred_sync_pipeline = SequentialAgent(
     name="CrediSync_Workflow",
-    sub_agents=[ingestion_agent, valuation_agent],
-    description="Sequentially executes document ingestion and financial valuation for loan applications."
+    sub_agents=[ingestion_agent, valuation_agent, credit_review_pipeline],
+    description="Executes sequential document ingestion, valuation, and the iterative credit review loop (underwriting, risk critic, compliance)."
 )
 
 # 2. Define your Dispatcher Agent (The Intelligent Gatekeeper)
@@ -31,12 +46,12 @@ cred_sync_dispatcher = Agent(
     parsed and saved the client details to session state (`ingestion_result`).
     4. **PIPELINE EXECUTION:** Once documents are ingested and state is saved, hand off control 
     to the `CrediSync_Workflow`.
-    5. **REPORTING:** Present the final valuation verdict (`val_result`) clearly to the user.
+    5. **REPORTING & PERSISTENCE:** Present the finalized lending package verdict clearly to the user once committed to Cloud Spanner.
     
     TONE: Professional, authoritative, and compliance-focused.
     """,
     sub_agents=[cred_sync_pipeline], # The sequential pipeline acts as a specialized sub-agent
-    output_key="val_result"
+    output_key="final_lending_package",
 )
 
 # Root dispatcher entrypoint

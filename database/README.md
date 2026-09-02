@@ -17,6 +17,12 @@ The database is structured into two primary tables to separate core business ent
 
 2. **IngestionExtractionRecords**: Serves as an immutable audit trail for the ingestion agent's parser outputs, capturing normalization results, tax IDs, confidence scores, and payload summaries.
 
+3. **ValuationRecords**: Tracks the quantitative risk metrics computed during the valuation phase, including credit scores, risk tiers, debt-service coverage ratios (DSCR), collateral market values, and loan-to-value (LTV) ratios.
+
+4. **UnderwritingResults**: Persists the core underwriting evaluation outputs, capturing probabilities of default, recommended lending limits, policy rule validation flags, and institutional risk notes.
+
+5. **ComplianceRecords**: Records statutory compliance, anti-money laundering (AML) clearances, sanctions checks, audit trail identifiers, and regulatory notes for every loan application.
+
 
 ## Setting up the Table
 1. Open the Google Cloud Console and navigate to **Cloud Spanner**.

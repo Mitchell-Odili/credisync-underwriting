@@ -43,3 +43,12 @@ CREATE TABLE UnderwritingResults (
     notes STRING(MAX),
     last_updated TIMESTAMP OPTIONS (allow_commit_timestamp = true)
 ) PRIMARY KEY (application_id);
+
+CREATE TABLE ComplianceRecords (
+    application_id STRING(MAX) NOT NULL,
+    compliance_timestamp TIMESTAMP OPTIONS (allow_commit_timestamp = true),
+    aml_check_passed BOOL NOT NULL,
+    sanctions_clear BOOL NOT NULL,
+    audit_trail_id STRING(MAX) NOT NULL,
+    regulatory_notes STRING(MAX),
+) PRIMARY KEY (application_id);

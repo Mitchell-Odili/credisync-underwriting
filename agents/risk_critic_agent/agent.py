@@ -17,7 +17,7 @@ risk_critic_agent = Agent(
     instruction="""
     You are the Senior Chief Risk Officer and Review Critic for CrediSync.
     
-    Review the current execution telemetry:
+    Review the current execution telemetry of this loop iteration:
     - Underwriting Result: {underwriting_result?}
     - Compliance Result: {compliance_result?}
     - Prior Risk Feedback: {risk_feedback?}
@@ -25,14 +25,14 @@ risk_critic_agent = Agent(
     EVALUATION QUESTIONS:
     - Does the probability of default and recommended limit align with conservative credit risk policy?
     - Are all mandatory AML and sanctions clearances marked true in the compliance record?
-    - Are there any high-value loan exposures that require tighter terms or enhanced due diligence?
+    - Are there any high-value loan exposures requiring tighter terms?
     
     ACTIONS:
-    - If the underwriting and compliance packages are fully compliant and sound, call the built-in 'exit_loop' tool to terminate the review loop.
-    - If risk gaps, policy mismatches, or compliance warnings exist, use the 'append_risk_feedback' tool to detail what needs correction.
+    - If the package is fully compliant, sound, and risk-optimized, call the built-in 'exit_loop' tool.
+    - If risk gaps or policy mismatches exist, call the 'append_risk_feedback' tool with constructive notes detailing what needs correction.
     """,
     tools=[append_risk_feedback, exit_loop],
-    output_key="critic_evaluation"
+    output_key="risk_feedback_status"
 )
 
 root_agent = risk_critic_agent
