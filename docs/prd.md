@@ -13,39 +13,39 @@ Financial service providers often struggle with manual document processing, frag
 ## 3. System Architecture & Component Breakdown
 
 ```text
-               ┌───────────────────────────┐
-               │    Dispatcher Service     │
-               │  (Orchestration & State)  │
-               └─────────────┬─────────────┘
-             ┌───────────────┴───────────────┐
-             ▼                               ▼
-   ┌───────────────────┐           ┌───────────────────┐
-   │ Ingestion Service │           │ Valuation Service │
-   │(Document Parsing) │           │(Solvency & Ratios)│
-   └─────────┬─────────┘           └─────────┬─────────┘
-             │                               │
-             └───────────────┬───────────────┘
-                             ▼
-               ┌───────────────────────────┐
-               │   Underwriting Service    │
-               │ (BigQuery Risk Scoring)   │
-               └─────────────┬─────────────┘
-                             ▼
-               ┌───────────────────────────┐
-               │    Compliance Service     │
-               │ (AML, Limits & Audit Log) │
-               └─────────────┬─────────────┘
-                             ▼
-               ┌───────────────────────────┐
-               │  Agent Egress Gateway &   │
-               │       Model Armor         │
-               └───────────────────────────┘
 
+                    Underwriting Request
+                            │
+                            ▼
+                       Dispatcher
+                            │
+                            ▼
+                    Ingestion Agent
+                   (Document Parsing)
+                            │
+                            ▼
+                    Valuation Agent
+                  (Solvency & Ratios)
+                            │
+                            ▼
+             ┌──────────────┼──────────────┐
+             ▼              ▼              ▼
+       ┌──────────┐   ┌───────────┐   ┌──────────┐
+       │   Loop   │   │   Loop    │   │   Loop   │
+       │  Under-  │   │   Risk    │   │ Compli-  │
+       │ writing  │   │  Critic   │   │   ance   │
+       └────┬─────┘   └─────┬─────┘   └────┬─────┘
+            │               │              │
+            └───────────────┼──────────────┘
+                            ▼
+              Decision + Evidence (Cloud Spanner)
 ```
+
 - **Dispatcher Service (`dispatcher_agent`)**: Manages asynchronous workflow orchestration using `LoopAgent`, `SequentialAgent`, and `RemoteA2aAgent` compiling final approval packages.
 - **Ingestion Service (`ingestion_agent`)**: Accepts and parses unstructured financial documents uploaded by loan applicants, such as tax returns and bank statements with Model Armor input sanitization.
 - **Valuation Service (`valuation_agent`)**: Reaches out to external APIs such as credit bureaus and property appraisers to evaluate borrower risk. 
-- **Underwriting Service (`underwriting_agent`)**: Accesses private database tables in BigQuery containing client transaction records to perform institutional risk scoring
+- **Underwriting Service (`underwriting_agent`)**: Evaluates policy rules and credit metrics, committing intermediate state directly to **Cloud Spanner** for durable transaction tracking.
+- **Risk Critic (`risk_critic_agent`)**: Operates as a deterministic control layer verifying model outputs against hard risk thresholds, separating AI reasoning from final authority.
 - **Compliance Service (`compliance_agent`)**: Acts as the final regulatory and policy gatekeeper, validating underwriting packages against statutory lending limits, checking AML/sanctions criteria, and generating immutable audit traces.
 - **Agent App (`app`)**: A web application that queries the dispatcher agent, displays progress, and renders performance waterfall analytics via Cloud Shell Web Preview.
 
@@ -73,4 +73,5 @@ Financial service providers often struggle with manual document processing, frag
 ## 6. Non-Functional Requirements (NFR)
 * **Security:** Zero-Trust networking with encrypted payloads and service-to-service authentication.
 * **Scalability:** Serverless auto-scaling on Google Cloud Run allowing independent scaling of high-load microservices (e.g., Ingestion).
-* **Observability:** Centralized execution tracing via ADK lifecycle hooks (`ToolContext` and `CallbackContext`).
+* **Reliability & State Persistence**: Guaranteed transaction persistence via **Cloud Spanner** to ensure state survives ephemeral container restarts.
+* **Observability:** Centralized execution tracing via ADK lifecycle hooks (`ToolContext` and `CallbackContext`) and strcutured log collection.
