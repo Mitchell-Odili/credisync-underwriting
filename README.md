@@ -15,7 +15,7 @@ This diagram illustrates the sequential workflow execution, the nested loop revi
 ---
 
 ## 🏛️ Micro Services Architecture
-This project uses a distributed microservices architecture where each agent runs in its own container and communicates securely via the Agent-2-Agent (A2A) protocol over HTTP:
+Credisync uses a distributed microservices architecture where each agent runs in its own container and communicates securely via the Agent-2-Agent (A2A) protocol over HTTP:
 
 - **Dispatcher Service (`dispatcher`)**: Summarizes the lending package, manages workflow coordination using `LoopAgent`, `SequentialAgent`, and `RemoteA2aAgent` and writes the final output to a shared cloud workspace.
 - **Ingestion Service (`ingestion`)**: Accepts and parses unstructured financial documents uploaded by loan applicants, such as tax returns and bank statements with Model Armor input sanitization.
