@@ -1,12 +1,44 @@
-# Credisync-underwriting & Risk platform
+# Credisync-underwriting 
+### Agentic AI for Credit Underwriting
 
-An enterprise multi-agent credit scoring, financial valuation, and risk underwriting platform built with Google's Agent Development Kit (ADK) and Agent-to-Agent (A2A) protocol. It features a team of specialized microservice agents that ingest loan applications, evaluate borrower solvency, enforce compliance guardrails and score financial risks, orchestrated to deliver robust automated lending packages for financial service providers.
+CrediSync is a multi-agent AI underwriting platform exploring how complex credit decisions can be decomposed into specialized AI services while maintaining security, durable state, governance, and deterministic controls.
+
+Instead of asking a single LLM to decide whether a borrower should be approved, CrediSync orchestrates specialized agents for data ingestion, valuation, underwriting, compliance, and risk critique.
+
+---
+## 🏗️ High Level Pipeline Architecture
+
+This diagram illustrates the sequential workflow execution, the nested loop review block, and state persistence touchpoints across the agent pipeline:
+
+![CrediSync Multi-Agent Workflow](docs/assets/workflow-architecture.jpg)
+
+---
+
+## 🏛️ Micro Services Architecture
+This project uses a distributed microservices architecture where each agent runs in its own container and communicates securely via the Agent-2-Agent (A2A) protocol over HTTP:
+
+- **Dispatcher Service (`dispatcher`)**: Summarizes the lending package, manages workflow coordination using `LoopAgent`, `SequentialAgent`, and `RemoteA2aAgent` and writes the final output to a shared cloud workspace.
+- **Ingestion Service (`ingestion`)**: Accepts and parses unstructured financial documents uploaded by loan applicants, such as tax returns and bank statements with Model Armor input sanitization.
+- **Valuation Service (`valuation`)**: Reaches out to (mock) external APIs such as credit bureaus and property appraisers to evaluate borrower risk.
+- **Underwriting Service (`underwriting`)**: Accesses private database tables in BigQuery containing client transaction records to perform institutional risk scoring.
+- **Compliance Service (`compliance_agent`)**: Acts as the final regulatory and policy gatekeeper, evaluating underwriting packages against configured lending policies and compliance requirements, including AML/sanctions checks, and records audit events.
+- **Risk Critic Service (`risk_critic_agent`)**: Acts as the risk governance layer, executing deterministic Python risk evaluations to enforce institutional risk appetite rules and trigger refinement loops for high-value exposures.
+- **Agent App (`app`)**: A web application that queries the dispatcher agent, displays progress, and renders performance waterfall analytics via Cloud Shell Web Preview.
+
+---
+
+## 💡 Key Design Decisions
+- **Specialized agents**: Separates ingestion, valuation, underwriting, compliance, and risk responsibilities.
+- **A2A communication**: Enables independently deployable agent services.
+- **Durable state**: Spanner separates business state from ephemeral Cloud Run execution.
+- **Deterministic risk controls**: A Python-based risk critic provides a non-LLM control layer for risk-sensitive decisions.
+- **OIDC authentication**: Establishes authenticated service-to-service trust boundaries.
 
 ---
 
 ## ☁️ Enterprise Cloud Infrastructure
 
-The high-level cloud deployment topology outlines the integration across Google Cloud Run, Cloud Functions, external APIs, and secure A2A communication channels:
+For production deployments, CrediSync maps onto a production-oriented Google Cloud infrastructure utilizing Cloud Run for services, Cloud Spanner for durable transactional state, external APIs, secure A2A communication channels, and Secret Manager for governance:
 
 ![Enterprise Multi-Agent Architecture](docs/assets/enterprise-architecture.jpg)
 
@@ -16,29 +48,7 @@ The high-level cloud deployment topology outlines the integration across Google 
 Following strict enterprise cloud security guidelines, **agent memory** is never kept solely in local container RAM to prevent broken multi-turn conversations during scaling events or container recycling. Instead, the application employs a two-tier model:
 
 1. **Ephemeral Runtime State (`tool_context.state`)**: Provides low-latency shorthand context for active agent execution loops.
-2. **Durable Enterprise Persistence (Google Cloud Spanner)**: Instantly externalizes transaction records (such as `LoanApplicationRecords` and `IngestionExtractionRecords`) to a managed, ACID-compliant, encrypted operational store (`OLTP`), ensuring complete fault tolerance, compliance audit readiness, and leak prevention.
-
----
-
-
-## 🏛️ Micro Services Architecture
-This project uses a distributed microservices architecture where each agent runs in its own container and communicates securely via the Agent-2-Agent (A2A) protocol over HTTP:
-
-- **Dispatcher Service (`dispatcher`)**: Summarizes the lending package, manages workflow coordination using `LoopAgent`, `SequentialAgent`, and `RemoteA2aAgent` and writes the final output to a shared cloud workspace.
-- **Ingestion Service (`ingestion`)**: Accepts and parses unstructured financial documents uploaded by loan applicants, such as tax returns and bank statements with Model Armor input sanitization.
-- **Valuation Service (`valuation`)**: Reaches out to external APIs such as credit bureaus and property appraisers to evaluate borrower risk.
-- **Underwriting Service (`underwriting`)**: Accesses private database tables in BigQuery containing client transaction records to perform institutional risk scoring.
-- **Compliance Service (`compliance_agent`):** Acts as the final regulatory and policy gatekeeper, validating underwriting packages against statutory lending limits, checking AML/sanctions criteria, and generating immutable audit traces.
-- **Risk Critic Service (`risk_critic_agent`)**: Acts as the chief risk governance gatekeeper, executing deterministic Python risk evaluations to enforce institutional risk appetite rules and trigger refinement loops for high-value exposures.
-- **Agent App (`app`)**: A web application that queries the dispatcher agent, displays progress, and renders performance waterfall analytics via Cloud Shell Web Preview.
-
----
-
-## 🏗️ Multi-Agent Workflow Architecture
-
-The orchestration logic is structured around sequential and loop primitives using ADK. The **Dispatcher** coordinates document ingestion and valuation concurrently, followed by an iterative underwriting and compliance review loop:
-
-![CrediSync Multi-Agent Workflow](docs/assets/workflow-architecture.jpg)
+2. **Durable Enterprise Persistence (Google Cloud Spanner)**: Instantly externalizes transaction records to a managed, ACID-compliant, encrypted operational store (`OLTP`), providing durable transactional state and supporting resilience, auditability, and controlled data access.
 
 ---
 ## 🗂️ Project Structure
@@ -52,7 +62,6 @@ credisync-underwriting/
 │   ├── valuation_agent/
 |   ├── compliance_agent/
 │   ├── risk_critic_agent/
-│   ├── credreview_pipeline/ # Iterative critique-refine loop orchestrator
 │   └── dispatcher_agent/
 ├── shared/                  # Common schemas, Pydantic models, configuration, database client and A2A protocol helpers
 ├── config/                  # Cloud Run deployment configs & environment variables
