@@ -30,7 +30,6 @@ This project uses a distributed microservices architecture where each agent runs
 - **Underwriting Service (`underwriting`)**: Accesses private database tables in BigQuery containing client transaction records to perform institutional risk scoring.
 - **Compliance Service (`compliance_agent`):** Acts as the final regulatory and policy gatekeeper, validating underwriting packages against statutory lending limits, checking AML/sanctions criteria, and generating immutable audit traces.
 - **Risk Critic Service (`risk_critic_agent`)**: Acts as the chief risk governance gatekeeper, executing deterministic Python risk evaluations to enforce institutional risk appetite rules and trigger refinement loops for high-value exposures.
-- **Credit Review Pipeline (`credreview_pipeline`)**: Orchestrates an iterative critique-refine loop (`LoopAgent`) coordinating the underwriting, compliance, and risk critic agents under strict institutional risk thresholds.
 - **Agent App (`app`)**: A web application that queries the dispatcher agent, displays progress, and renders performance waterfall analytics via Cloud Shell Web Preview.
 
 ---
