@@ -38,7 +38,8 @@ Credisync uses a distributed microservices architecture where each agent runs in
 
 ## ☁️ Enterprise Cloud Infrastructure
 
-For production deployments, CrediSync maps onto a production-oriented Google Cloud infrastructure utilizing Cloud Run for services, Cloud Spanner for durable transactional state, external APIs, secure A2A communication channels, and Secret Manager for governance:
+For production deployments, CrediSync maps onto a production-oriented Google Cloud architecture utilizing **Cloud Run** for independently deployable services, **Cloud Spanner** for durable transactional state, **Model Armor** for input sanitization and output data-leak detection, **Secret Manager** for secure credential management, external APIs, and authenticated **A2A communication**.
+
 
 ![Enterprise Multi-Agent Architecture](docs/assets/enterprise-architecture.jpg)
 
