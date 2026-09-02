@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 from typing import List, Optional
 from pydantic import BaseModel, Field
 
@@ -11,6 +10,7 @@ class LoanApplication(BaseModel):
     employment_status: str = Field(..., description="Employment type (e.g., Full-Time, Self-Employed)")
     documents: List[str] = Field(default_factory=list, description="List of uploaded document paths or identifiers")
 
+
 class FinancialDocumentExtraction(BaseModel):
     """Extracted entities from unstructured financial documents like tax returns or bank statements."""
     application_id: str = Field(..., description="Unique UUID linking this extraction to the loan application")
@@ -20,10 +20,7 @@ class FinancialDocumentExtraction(BaseModel):
     total_liabilities: float = Field(..., description="Total liabilities or debt obligations found.")
     document_type: str = Field(..., description="Type of document ingested, e.g., 'tax_return' or 'bank_statement'.")
     confidence_score: float = Field(..., description="Confidence score of the extracted data between 0.0 and 1.0.")
-    # timestamp: str = Field(
-    #     default_factory=lambda: datetime.now(timezone.utc).isoformat(),
-    #     description="Time when extraction occurred (ISO string)"
-    # )
+
 
 class IngestionResult(BaseModel):
     """Output from the Ingestion Agent after parsing and sanitizing inputs."""
@@ -32,9 +29,7 @@ class IngestionResult(BaseModel):
     normalized_income: float = Field(..., description="Normalized income figure verified after parsing statements")
     extracted_data: Optional[FinancialDocumentExtraction] = Field(None, description="Detailed document extraction breakdown")
     sanitized_payload_summary: str = Field(..., description="Model Armor verified summary of unstructured data")
-    # timestamp: str = Field(
-    #     default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    # )
+
 
 class ValuationResult(BaseModel):
     application_id: str = Field(..., description="Unique loan application identifier")
@@ -45,6 +40,7 @@ class ValuationResult(BaseModel):
     loan_to_value_ratio: Optional[float] = Field(None, description="LTV ratio if collateral is present")
     valuation_notes: List[str] = Field(default_factory=list, description="External verification notes or flags")
 
+
 class UnderwritingResult(BaseModel):
     """Output from the Underwriting Agent detailing risk computation and credit rules."""
     application_id: str
@@ -52,6 +48,7 @@ class UnderwritingResult(BaseModel):
     recommended_limit: float = Field(..., description="Maximum recommended credit limit")
     policy_rules_passed: bool = Field(..., description="Whether institutional credit rules were satisfied")
     notes: str = Field(..., description="Underwriting decision rationale")
+
 
 class ComplianceResult(BaseModel):
     """Output from the Compliance Agent acting as the regulatory gatekeeper."""
@@ -61,14 +58,9 @@ class ComplianceResult(BaseModel):
     audit_trail_id: str = Field(..., description="Immutable compliance log hash or ID")
     regulatory_notes: str = Field(..., description="Statutory limit validation details")
 
+
 class LendingPackage(BaseModel):
     """Final unified lending package assembled by the Dispatcher Agent."""
     application_id: str
     overall_status: str = Field(..., description="Final decision (e.g., APPROVED, REJECTED, REVISE)")
-    ingestion: IngestionResult
-    valuation: ValuationResult
-    underwriting: UnderwritingResult
-    compliance: ComplianceResult
-    # generated_at: str = Field(
-    #     default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    # )
+    summary_notes: str = Field(..., description="Synthesized executive summary of the underwriting and compliance review.")

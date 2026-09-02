@@ -52,3 +52,10 @@ CREATE TABLE ComplianceRecords (
     audit_trail_id STRING(MAX) NOT NULL,
     regulatory_notes STRING(MAX),
 ) PRIMARY KEY (application_id);
+
+CREATE TABLE LendingPackages (
+    application_id STRING(MAX) NOT NULL,
+    overall_status STRING(MAX) NOT NULL,
+    summary_notes STRING(MAX) NOT NULL,
+    generated_at TIMESTAMP OPTIONS (allow_commit_timestamp = true)
+) PRIMARY KEY (application_id);
