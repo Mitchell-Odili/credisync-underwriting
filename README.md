@@ -31,6 +31,7 @@ Credisync uses a distributed microservices architecture where each agent runs in
 - **Specialized agents**: Separates ingestion, valuation, underwriting, compliance, and risk responsibilities.
 - **A2A communication**: Enables independently deployable agent services.
 - **Durable state**: Spanner separates business state from ephemeral Cloud Run execution.
+- **Model Armor**: Screens untrusted inputs and model outputs for threats and sensitive-data leakage before information crosses the AI boundary.
 - **Deterministic risk controls**: A Python-based risk critic provides a non-LLM control layer for risk-sensitive decisions.
 - **OIDC authentication**: Establishes authenticated service-to-service trust boundaries.
 
