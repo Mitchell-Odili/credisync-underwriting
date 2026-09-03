@@ -65,7 +65,7 @@ credisync-underwriting/
 |   ├── compliance_agent/
 │   ├── risk_critic_agent/
 │   └── dispatcher_agent/
-├── shared/                  # Common schemas, Pydantic models, configuration, database client and A2A protocol helpers
+├── shared/                  # Common schemas, Pydantic models, configuration, database client, logging callbacks, Model Armor security, tests, and A2A protocol helpers
 ├── config/                  # Cloud Run deployment configs & environment variables
 └── main.py                  # Orchestration entrypoint
 ```
@@ -76,6 +76,9 @@ The `shared/` directory contains core modules shared across all agents and the w
 - `schemas.py` – Pydantic data models for loan applications, ingestion, valuation, underwriting, compliance, and final lending packages
 - `db.py` – Google Cloud Spanner transactional mutation wrapper (`SpannerClientWrapper`) for secure operational state persistence.
 - `rate_limiter.py` – Robust retry decorator handling `429 ResourceExhausted` errors and automatically managing Gemini API free-tier 15 RPM rate limits.
+- `logging_callback.py` – Structured JSON logging callbacks tracking agent execution phases, lifecycle events, and invocation timing.
+- `model_armor_callback.py` – Security perimeter callbacks (`before_model_callback` / `after_model_callback`) for blocking prompt injections and data leaks.
+- `tests/` – Unit tests (`test_logging.py`, `test_model_armor.py`) validating shared utility modules.
 - `a2a_utils.py` – Contains code for rewriting agent URLs in A2A AgentCards when deployed in Google Cloud Run.
 - `adk_app.py` – ADK API Service implementation with built-in A2A functionality and lifecycle hook management (`ToolContext`/ `CallbackContext`).
 - `authenticated_httpx.py` – [httpx](https://www.python-httpx.org/) client extension configured for secure [service-to-service requests](https://docs.cloud.google.com/run/docs/authenticating/service-to-service) with OIDC ID tokens.
