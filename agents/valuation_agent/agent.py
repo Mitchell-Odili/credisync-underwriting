@@ -11,6 +11,7 @@ from google.adk.tools.skill_toolset import SkillToolset
 
 from shared.config import MODELS
 from agents.valuation_agent.tools.valuation_tool import assess_and_save_borrower_valuation
+from shared.logging_callback import before_agent_callback, after_agent_callback
 
 # Load the structured skill directory
 skill_dir = pathlib.Path(__file__).parent / "skills" / "valuation-extractor"
@@ -41,7 +42,10 @@ valuation_agent = Agent(
         assess_and_save_borrower_valuation, 
         valuation_extractor_toolset
     ],
-     output_key="val_result", # Automatically captures and saves the final output to session state
+    # Wire the lifecycle hooks
+    before_agent_callback=before_agent_callback,
+    after_agent_callback=after_agent_callback,
+    output_key="val_result", # Automatically captures and saves the final output to session state
 )
 
 root_agent = valuation_agent

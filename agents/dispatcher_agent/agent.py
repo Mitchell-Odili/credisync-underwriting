@@ -1,3 +1,4 @@
+import os
 import sys
 import pathlib
 
@@ -14,6 +15,17 @@ from agents.risk_critic_agent.agent import risk_critic_agent
 from agents.dispatcher_agent.tools.lending_package_persistence import finalize_and_record_application
 from shared.config import MODELS
 
+from shared.logging_callback import before_agent_callback, after_agent_callback
+from shared.model_armor_callback import create_model_armor_callbacks
+
+# Load environment configuration
+project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
+region = os.getenv("REGION", "us-central1")
+template_id = os.getenv("MODEL_ARMOR_TEMPLATE_ID", "credisync-security-template")
+
+# Instantiate observability & security callbacks using factory patterns
+before_armor, after_armor = create_model_armor_callbacks(project_id, region, template_id)
+
 # 1. Define the iterative review loop directly
 credit_review_pipeline = LoopAgent(
     name="CreditReviewPipeline",
@@ -29,7 +41,7 @@ credit_review_pipeline = LoopAgent(
 # 2. Define the dedicated Lending Package Writer Agent
 lending_package_writer_agent = Agent(
     name="LendingPackageWriter",
-    model=MODELS.get("dispatch", "gemini-2.5-flash"),
+    model=MODELS.get("lending", "gemini-2.5-flash"),
     instruction="""
     You are the CrediSync Lending Package Writer. 
     1. **VERIFY STATE:** Review the active session state to ensure `ingestion_result`, `valuation_result`, `underwriting_result`, and `compliance_result` are fully populated.
@@ -37,6 +49,8 @@ lending_package_writer_agent = Agent(
     3. **PERSIST RECORD:** Immediately call the `finalize_and_record_application` tool, passing the active `application_id`, the determined `overall_status`, and the `summary_notes` to commit the record to Cloud Spanner.
     """,
     tools=[finalize_and_record_application],
+    # Exit security callback: Scans final generated output text before it reaches the user
+    after_model_callback=after_armor,
     output_key="final_lending_package"
 )
 
@@ -70,6 +84,11 @@ cred_sync_dispatcher = Agent(
     TONE: Professional, authoritative, and compliance-focused.
     """,
     sub_agents=[cred_sync_pipeline],
+    # Wire the lifecycle hooks
+    before_agent_callback=before_agent_callback,
+    after_agent_callback=after_agent_callback,
+    # Wire the model boundary security hooks
+    before_model_callback=before_armor,
 )
 
 # Root dispatcher entrypoint

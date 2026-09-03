@@ -10,6 +10,8 @@ from google.adk.skills import load_skill_from_dir
 from google.adk.tools.skill_toolset import SkillToolset
 from shared.config import MODELS
 from agents.compliance_agent.tools.compliance_persistence import persist_compliance_record
+from shared.logging_callback import before_agent_callback, after_agent_callback
+
 
 # Load the regulatory-compliance skill directory
 skill_dir = pathlib.Path(__file__).parent / "skills" / "regulatory-compliance"
@@ -33,6 +35,9 @@ compliance_agent = Agent(
     4. Summarize the final compliance clearance status and audit reference ID for the execution record.
     """,
     tools=[compliance_toolset, persist_compliance_record],
+    # Wire the lifecycle hooks
+    before_agent_callback=before_agent_callback,
+    after_agent_callback=after_agent_callback,
     output_key="compliance_result"
 )
 

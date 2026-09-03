@@ -9,6 +9,7 @@ from google.adk.agents import Agent
 from google.adk.skills import load_skill_from_dir
 from google.adk.tools.skill_toolset import SkillToolset
 from shared.config import MODELS
+from shared.logging_callback import before_agent_callback, after_agent_callback
 
 # 1. Import your database persistence tool from the tools folder
 from agents.underwriting_agent.tools.db_tools import persist_underwriting_record
@@ -36,6 +37,9 @@ underwriting_agent = Agent(
     """,
     # Both tools are passed together in the toolset array
     tools=[credit_policy_toolset, persist_underwriting_record],
+    # Wire the lifecycle hooks
+    before_agent_callback=before_agent_callback,
+    after_agent_callback=after_agent_callback,
     output_key="underwriting_result"
 )
 

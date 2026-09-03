@@ -9,6 +9,9 @@ from google.adk.agents import Agent
 from google.adk.tools import exit_loop
 from shared.config import MODELS
 from agents.risk_critic_agent.tools.critic_tools import append_risk_feedback
+from shared.logging_callback import before_agent_callback, after_agent_callback
+
+# Agent
 
 risk_critic_agent = Agent(
     name="RiskCriticAgent",
@@ -32,6 +35,9 @@ risk_critic_agent = Agent(
     - If risk gaps or policy mismatches exist, call the 'append_risk_feedback' tool with constructive notes detailing what needs correction.
     """,
     tools=[append_risk_feedback, exit_loop],
+    # Wire the lifecycle hooks
+    before_agent_callback=before_agent_callback,
+    after_agent_callback=after_agent_callback,
     output_key="risk_feedback_status"
 )
 

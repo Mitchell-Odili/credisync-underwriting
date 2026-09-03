@@ -1,3 +1,4 @@
+import os
 import sys
 import pathlib
 
@@ -12,6 +13,16 @@ from google.adk.tools.skill_toolset import SkillToolset
 from shared.config import MODELS
 from shared.schemas import IngestionResult
 from agents.ingestion_agent.tools.persistence import save_client_details_to_state
+# from shared.logging_callback import before_agent_callback, after_agent_callback
+# from shared.model_armor_callback import create_model_armor_callbacks
+
+# # Load environment configuration
+# project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
+# region = os.getenv("REGION", "us-central1")
+# template_id = os.getenv("MODEL_ARMOR_TEMPLATE_ID", "credisync-security-template")
+
+# # Instantiate observability & security callbacks using factory patterns
+# before_armor, after_armor = create_model_armor_callbacks(project_id, region, template_id)
 
 # Load the structured skill directory
 skill_dir = pathlib.Path(__file__).parent / "skills" / "financial-document-extraction-parser"
@@ -35,6 +46,12 @@ ingestion_agent = Agent(
     4. **Clean Output:** Output the final validated application record clearly.
     """,
     tools=[financial_parser_toolset, save_client_details_to_state],
+    # # Wire the lifecycle hooks
+    # before_agent_callback=before_agent_callback,
+    # after_agent_callback=after_agent_callback,
+    # # Wire the model boundary security hooks
+    # before_model_callback=before_armor,
+    # after_model_callback=after_armor,
     # output_schema=IngestionResult,
     output_key="ingestion_result", # Automatically captures and saves the final output to session state
 )
