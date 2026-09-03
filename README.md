@@ -20,7 +20,7 @@ Credisync uses a distributed microservices architecture where each agent runs in
 - **Dispatcher Service (`dispatcher`)**: Summarizes the lending package, manages workflow coordination using `LoopAgent`, `SequentialAgent`, and `RemoteA2aAgent` and writes the final output to a shared cloud workspace.
 - **Ingestion Service (`ingestion`)**: Accepts and parses unstructured financial documents uploaded by loan applicants, such as tax returns and bank statements with Model Armor input sanitization.
 - **Valuation Service (`valuation`)**: Reaches out to (mock) external APIs such as credit bureaus and property appraisers to evaluate borrower risk.
-- **Underwriting Service (`underwriting`)**: Accesses private database tables in BigQuery containing client transaction records to perform institutional risk scoring.
+- **Underwriting Service (`underwriting`)**: Evaluates loan valuation telemetry against institutional credit policies using modular skills, computes risk parameters, and persists decisions to Cloud Spanner.
 - **Compliance Service (`compliance_agent`)**: Acts as the final regulatory and policy gatekeeper, evaluating underwriting packages against configured lending policies and compliance requirements, including AML/sanctions checks, and records audit events.
 - **Risk Critic Service (`risk_critic_agent`)**: Acts as the risk governance layer, executing deterministic Python risk evaluations to enforce institutional risk appetite rules and trigger refinement loops for high-value exposures.
 - **Agent App (`app`)**: A web application that queries the dispatcher agent, displays progress, and renders performance waterfall analytics (accessible via local browser or Cloud Shell Web Preview).
