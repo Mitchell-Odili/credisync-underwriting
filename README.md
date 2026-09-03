@@ -122,22 +122,105 @@ The `shared/` directory contains core modules shared across all agents and the w
 
 ---
 
-## 🚢 Deployment
+## 🚢 Deployment to Google Cloud Run
 
-To deploy to Google Cloud Run, containerize and deploy each service individually, then configure the Dispatcher/Orchestrator service with the secure endpoint URLs of the downstream microservices.
+To deploy the multi-agent mesh to Cloud Run, containerize and deploy each service individually, then configure the Dispatcher service with the secure endpoint URLs of the downstream microservices.
 
-1.  **Deploy Microservices:**
-    Deploy the `ingestion/`, `valuation/`, `underwriting/`, `compliance/`, `risk_critic/`, and `dispatcher/` folders as separate Cloud Run services. Note down their assigned HTTPS service URLs (e.g., `https://ingestion-xyz.a.run.app`).
+Set your target region and project variables first:
+```bash
+export REGION="global"
+export GOOGLE_CLOUD_PROJECT="your-gcp-project-id"
+export GOOGLE_CLOUD_LOCATION="global"
+export MODEL="gemini-3.5-flash-lite" # or your preferred model
+```
 
-2.  **Deploy Agent App & Configure Environment Variables:**
-    Deploy the dispatcher/app folder to Cloud Run and configure the following environment variables to wire up the Agent-to-Agent network via Agent Cards:
-    *   `INGESTION_AGENT_CARD_URL`: `https://<ingestion-url>/.well-known/agent-card.json`
-    *   `VALUATION_AGENT_CARD_URL`: `https://<valuation-url>/.well-known/agent-card.json`
-    *   `UNDERWRITING_AGENT_CARD_URL`: `https://<underwriting-url>/.well-known/agent-card.json`
-    *   `COMPLIANCE_AGENT_CARD_URL`: `https://<compliance-url>/.well-known/agent-card.json`
-    *   `RISK_CRITIC_AGENT_CARD_URL`: `https://<risk-critic-url>/.well-known/agent-card.json`
-    *   `AGENT_URL`: `https://<dispatcher-url>`
+### 1.  **Deploy Individual Microservices:**
 
-3.  **Access:**
-    Open the deployed Dispatcher App URL in your browser.
+Run the following commands to deploy each specialized agent service to Cloud Run:
 
+#### a. Deploy Ingestion Agent Service:
+
+```bash
+gcloud run deploy credisync-ingestion \
+--source agents/ingestion_agent/ \
+--region $REGION \
+--allow-unauthenticated \
+--memory 512Mi \
+--set-env-vars GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION,GOOGLE_GENAI_USE_VERTEXAI="true",MODEL=$MODEL
+```
+#### b. Deploy Valuation Agent Service:
+
+```bash
+gcloud run deploy credisync-valuation \
+  --source agents/valuation_agent/ \
+  --region $REGION \
+  --allow-unauthenticated \
+  --memory 512Mi \
+  --set-env-vars GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION,GOOGLE_GENAI_USE_VERTEXAI="true",MODEL=$MODEL
+```
+
+#### c. Deploy Underwriting Agent Service
+
+```bash
+gcloud run deploy credisync-underwriting \
+  --source agents/underwriting_agent/ \
+  --region $REGION \
+  --allow-unauthenticated \
+  --memory 512Mi \
+  --set-env-vars GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION,GOOGLE_GENAI_USE_VERTEXAI="true",MODEL=$MODEL
+```
+
+#### d. Deploy Compliance Agent Service
+
+```bash
+gcloud run deploy credisync-compliance \
+  --source agents/compliance_agent/ \
+  --region $REGION \
+  --allow-unauthenticated \
+  --memory 512Mi \
+  --set-env-vars GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION,GOOGLE_GENAI_USE_VERTEXAI="true",MODEL=$MODEL
+```
+
+#### e. Deploy Risk Critic Agent Service
+
+```bash
+gcloud run deploy credisync-risk-critic \
+  --source agents/risk_critic_agent/ \
+  --region $REGION \
+  --allow-unauthenticated \
+  --memory 512Mi \
+  --set-env-vars GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION,GOOGLE_GENAI_USE_VERTEXAI="true",MODEL=$MODEL
+```
+
+### 2.  **Deploy Dispatcher & Wire Up Agent Cards:**
+
+After noting down the assigned HTTPS service URLs from the steps above, deploy the dispatcher/app folder and inject the downstream Agent Card endpoints:
+
+```bash 
+gcloud run deploy credisync-dispatcher \
+    --source app/ \
+    --region $REGION \
+    --allow-unauthenticated \
+    --memory 1Gi \
+    --set-env-vars GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,\
+GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION,\
+GOOGLE_GENAI_USE_VERTEXAI="true",\
+MODEL=$MODEL,\
+INGESTION_AGENT_CARD_URL="https://credisync-ingestion-<hash>.a.run.app/.well-known/agent-card.json",\
+VALUATION_AGENT_CARD_URL="https://credisync-valuation-<hash>.a.run.app/.well-known/agent-card.json",\
+UNDERWRITING_AGENT_CARD_URL="https://credisync-underwriting-<hash>.a.run.app/.well-known/agent-card.json",\
+COMPLIANCE_AGENT_CARD_URL="https://credisync-compliance-<hash>.a.run.app/.well-known/agent-card.json",\
+RISK_CRITIC_AGENT_CARD_URL="https://credisync-risk-critic-<hash>.a.run.app/.well-known/agent-card.json"
+```
+### 3. Update Dispatcher Self-Reference URL:
+
+Once the dispatcher finishes its initial deployment and outputs its assigned URL, update it to bind the `AGENT_URL` environment variable to itself:
+
+```bash
+gcloud run services update credisync-dispatcher \
+  --region $REGION \
+  --update-env-vars AGENT_URL="https://credisync-dispatcher-<hash>.a.run.app"
+```
+
+## 4. **Access:**
+Once deployment completes, open the resulting `credisync-dispatcher` Cloud Run service URL in your browser to access the live ADK web dashboard.
