@@ -23,7 +23,7 @@ Credisync uses a distributed microservices architecture where each agent runs in
 - **Underwriting Service (`underwriting`)**: Accesses private database tables in BigQuery containing client transaction records to perform institutional risk scoring.
 - **Compliance Service (`compliance_agent`)**: Acts as the final regulatory and policy gatekeeper, evaluating underwriting packages against configured lending policies and compliance requirements, including AML/sanctions checks, and records audit events.
 - **Risk Critic Service (`risk_critic_agent`)**: Acts as the risk governance layer, executing deterministic Python risk evaluations to enforce institutional risk appetite rules and trigger refinement loops for high-value exposures.
-- **Agent App (`app`)**: A web application that queries the dispatcher agent, displays progress, and renders performance waterfall analytics via Cloud Shell Web Preview.
+- **Agent App (`app`)**: A web application that queries the dispatcher agent, displays progress, and renders performance waterfall analytics (accessible via local browser or Cloud Shell Web Preview).
 
 ---
 
@@ -110,30 +110,34 @@ The `shared/` directory contains core modules shared across all agents and the w
     Create your Spanner instance/database using Google Standard SQL and apply the DDL script in [database/schema.sql](database/schema.sql).
 
 4.  **Run Locally:**
+    Make the orchestration script executable and start the mesh:
     ```bash
+    chmod +x run_local.sh
     ./run_local.sh
     ```
-    This will start the individual microservices and the web app processes concurrently.
+    This will boot up all individual microservices and the web app processes concurrently.
 
 5.  **Access the App:**
     Open **http://localhost:8000** in your browser.
+
+---
 
 ## 🚢 Deployment
 
 To deploy to Google Cloud Run, containerize and deploy each service individually, then configure the Dispatcher/Orchestrator service with the secure endpoint URLs of the downstream microservices.
 
 1.  **Deploy Microservices:**
-    Deploy the `ingestion/`, `valuation/`, `underwriting/`,`compliance/` and `dispatcher/` folders as separate Cloud Run services. Note down their assigned HTTPS service URLs (e.g., `[https://ingestion-xyz.a.run.app](https://ingestion-xyz.a.run.app)`)..
+    Deploy the `ingestion/`, `valuation/`, `underwriting/`, `compliance/`, `risk_critic/`, and `dispatcher/` folders as separate Cloud Run services. Note down their assigned HTTPS service URLs (e.g., `https://ingestion-xyz.a.run.app`).
 
-2.  **Deploy Agent App:**
-    Deploy the `app/` folder to Cloud Run and configure the following environment variables to wire up the Agent-to-Agent network via AgentCards:
-    *   `INGESTION_AGENT_CARD_URL`: `https://<ingestion-url>/a2a/agent/.well-known/agent.json`
-    *   `VALUATION_AGENT_CARD_URL`: `https://<valuation-url>/a2a/agent/.well-known/agent.json`
-    *   `UNDERWRITING_AGENT_CARD_URL`: `https://<underwriting-url>/a2a/agent/.well-known/agent.json`
-    *   `COMPLIANCE_AGENT_CARD_URL`: `https://<compliance-url>/a2a/agent/.well-known/agent.json`
+2.  **Deploy Agent App & Configure Environment Variables:**
+    Deploy the dispatcher/app folder to Cloud Run and configure the following environment variables to wire up the Agent-to-Agent network via Agent Cards:
+    *   `INGESTION_AGENT_CARD_URL`: `https://<ingestion-url>/.well-known/agent-card.json`
+    *   `VALUATION_AGENT_CARD_URL`: `https://<valuation-url>/.well-known/agent-card.json`
+    *   `UNDERWRITING_AGENT_CARD_URL`: `https://<underwriting-url>/.well-known/agent-card.json`
+    *   `COMPLIANCE_AGENT_CARD_URL`: `https://<compliance-url>/.well-known/agent-card.json`
+    *   `RISK_CRITIC_AGENT_CARD_URL`: `https://<risk-critic-url>/.well-known/agent-card.json`
     *   `AGENT_URL`: `https://<dispatcher-url>`
 
 3.  **Access:**
-    Open the App's URL in your browser.
-
+    Open the deployed Dispatcher App URL in your browser.
 

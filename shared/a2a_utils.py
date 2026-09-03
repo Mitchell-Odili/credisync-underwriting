@@ -16,11 +16,18 @@ import json
 import subprocess
 from urllib.parse import urlparse
 
-from a2a.utils.constants import (
-    AGENT_CARD_WELL_KNOWN_PATH,
-    EXTENDED_AGENT_CARD_PATH,
-    PREV_AGENT_CARD_WELL_KNOWN_PATH
-)
+try:
+    from a2a.utils.constants import (
+        AGENT_CARD_WELL_KNOWN_PATH,
+        EXTENDED_AGENT_CARD_PATH,
+        PREV_AGENT_CARD_WELL_KNOWN_PATH
+    )
+except ImportError:
+    AGENT_CARD_WELL_KNOWN_PATH = ".well-known/agent-card.json"
+    EXTENDED_AGENT_CARD_PATH = "extended_agent_card.json"
+    PREV_AGENT_CARD_WELL_KNOWN_PATH = ".well-known/agent.json"
+
+
 from google.adk.agents.remote_a2a_agent import DEFAULT_TIMEOUT
 from google.auth.transport.requests import AuthorizedSession, Request
 from google.auth.exceptions import DefaultCredentialsError

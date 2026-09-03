@@ -18,6 +18,7 @@ import logging
 import sys
 import typing
 import warnings
+import json
 
 import click
 import uvicorn
@@ -227,7 +228,14 @@ def main(
                 capabilities=AgentCapabilities(streaming=True)
             )
             agent_card = asyncio.run(card_builder.build())
-            card_json = agent_card.model_dump_json(indent=2)
+            if hasattr(agent_card, "model_dump"):
+                card_dict = agent_card.model_dump()
+            elif hasattr(agent_card, "dict"):
+                card_dict = agent_card.dict()
+            else:
+                # Fallback to vars() or attribute inspection if it's a plain object
+                card_dict = vars(agent_card)
+            card_json = json.dumps(card_dict, default=str, indent=2)
             card_file.write_text(card_json)
 
     app = fast_api.get_fast_api_app(

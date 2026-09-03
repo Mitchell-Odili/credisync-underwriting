@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.11"
 dependencies = [
+    "a2a-sdk[all]>=1.1.2",
     "google-adk",
     "google-cloud-modelarmor>=0.7.1",
     "google-cloud-spanner>=3.70.0",
