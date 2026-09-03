@@ -222,5 +222,5 @@ gcloud run services update credisync-dispatcher \
   --update-env-vars AGENT_URL="https://credisync-dispatcher-<hash>.a.run.app"
 ```
 
-## 4. **Access:**
+### 4. **Access:**
 Once deployment completes, open the resulting `credisync-dispatcher` Cloud Run service URL in your browser to access the live ADK web dashboard.
