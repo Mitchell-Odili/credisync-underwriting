@@ -67,7 +67,7 @@ credisync-underwriting/
 │   └── dispatcher_agent/
 ├── shared/                  # Common schemas, Pydantic models, configuration, database client, logging callbacks, Model Armor security, tests, and A2A protocol helpers
 ├── config/                  # Cloud Run deployment configs & environment variables
-└── main.py                  # Orchestration entrypoint
+└── run_local.sh             # Local microservices orchestration & mesh startup script
 ```
 
 ### 🔗 Shared Files
